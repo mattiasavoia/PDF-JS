@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Responsive - Modalità Scura</title>
+
+    <style>
+        /* Impostazioni di base */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Colore di sfondo scuro */
+            color: #ffffff; /* Testo bianco */
+            height: 100vh; /* Altezza della finestra del browser */
+            display: flex; /* Usa Flexbox per centrare il contenuto */
+            justify-content: center; /* Allinea orizzontalmente */
+            align-items: center; /* Allinea verticalmente */
+            text-align: center;
+            position: relative; /* Per la posizione del contenuto */
+        }
+
+        /* Stili per il contenitore principale */
+        .container {
+            background-color: #333333; /* Colore di sfondo del contenitore */
+            padding: 10px;
+            border-radius: 10px; /* Bordo arrotondato */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 90%; /* Larghezza massima */
+            max-width: 1300px; /* Limite della larghezza */
+            height: auto; /* Altezza fissa del contenitore */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Allinea gli elementi in cima */
+            align-items: center; /* Centra gli elementi orizzontalmente */
+        }
+
+        /* Freccia indietro (all'interno del contenitore, largo come il contenitore) */
+        .back-btn {
+            background: none;
+            border: 2px solid white; /* Aggiungi bordo per evidenziare */
+            color: white;
+            font-size: 2rem; /* Bottone grande */
+            padding: 0px 0; /* Grandezza del bottone */
+            cursor: pointer;
+            border-radius: 5px;
+            width: 50px; /* Il bottone occupa tutta la larghezza del contenitore */
+            text-align: center; /* Centra il testo nel bottone */
+            transition: background-color 0.3s ease;
+        }
+
+        /* Effetto hover per il bottone senza ingrandimento */
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Colore di sfondo al passaggio del mouse */
+        }
+
+        /* Stili per il video */
+        video {
+            width: 100%; /* Video occupa tutta la larghezza disponibile */
+            height: auto; /* Mantieni l'altezza proporzionale */
+            max-width: 900px; /* Larghezza massima del video */
+            max-height: 600px; /* Altezza massima del video */
+            margin: 20px 0; /* Spazio tra il video e il bottone */
+            display: block; /* Blocca il video per evitare che si sovrapponga */
+            border-radius: 5px;
+        }
+
+        /* Messaggio di errore */
+        .error-message {
+            color: red;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        /* Media query per schermi più piccoli */
+        @media (max-width: 768px) {
+            .back-btn {
+                font-size: 1.5rem; /* Bottone più piccolo per schermi più piccoli */
+                padding: 10px 0; /* Ridurre la dimensione del padding */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .back-btn {
+                font-size: 1.2rem; /* Ancora più piccolo per schermi extra piccoli */
+                padding: 8px 0; /* Adattamento del padding */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Freccia indietro per tornare alla pagina precedente -->
+        <button class="back-btn" onclick="goBack()">←</button>
+
+        <!-- Video player, inizialmente vuoto -->
+        <video id="videoPlayer" controls>
+            <source id="videoSource" type="video/mp4">
+            Il tuo browser non supporta il formato video.
+        </video>
+        
+        <!-- Messaggio di errore -->
+        <p id="errorMessage" class="error-message" style="display: none;">Error: video not available.</p>
+    </div>
+
+    <script>
+        // Funzione per ottenere i parametri dell'URL
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Funzione per verificare se un URL è valido
+        function isValidVideoUrl(url, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('HEAD', url, true); // Metodo HEAD per ottenere solo l'header
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    // Se lo stato è 200, significa che l'URL è valido
+                    callback(xhr.status === 200);
+                }
+            };
+            xhr.send();
+        }
+
+        // Funzione per tornare alla pagina precedente
+        function goBack() {
+            window.history.back(); // Simula il comportamento del "back" del browser
+        }
+
+        // Ottieni il nome del video tramite il parametro "videoPath"
+        const videoName = getQueryParameter('file');
+        const videoPath = videoName ? videoName : 'video.mp4'; // Se non c'è parametro, usa 'video.mp4' di default
+
+        // Controlla se l'URL del video è valido prima di caricarlo
+        isValidVideoUrl(videoPath, function(isValid) {
+            const videoElement = document.getElementById('videoPlayer');
+            const videoSource = document.getElementById('videoSource');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (isValid) {
+                // Se il video è valido, carica il video
+                videoSource.src = videoPath;
+                videoElement.load(); // Ricarica il video
+                errorMessage.style.display = 'none'; // Nascondi il messaggio di errore
+            } else {
+                // Se il video non è valido, mostra il messaggio di errore
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
